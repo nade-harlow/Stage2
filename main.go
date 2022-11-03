@@ -65,6 +65,7 @@ func calculate() gin.HandlerFunc {
 		}
 		if problem.OperationType == "" {
 			c.JSON(http.StatusBadRequest, "The operation type field is required.")
+			return
 		}
 		solution := solveProblem(problem)
 		if solution == nil {
