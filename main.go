@@ -58,6 +58,7 @@ func calculate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		problem := MathRequest{}
 		err := c.ShouldBind(&problem)
+		log.Println("INPUTS: ", problem)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "check fields and try again"})
 			return
