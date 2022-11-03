@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type MathRequest struct {
@@ -45,7 +46,7 @@ func CORSMiddleware() gin.HandlerFunc {
 func main() {
 	r := gin.Default()
 	r.Use(CORSMiddleware())
-	r.POST("/", Calculate())
+	r.POST("/", calculate())
 	err := r.Run()
 	if err != nil {
 		log.Println("An error occurred while starting up server")
@@ -53,28 +54,63 @@ func main() {
 	}
 }
 
-func Calculate() gin.HandlerFunc {
+func calculate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		problem := MathRequest{}
-		c.ShouldBind(&problem)
-		var result int64
-		switch problem.OperationType {
-		case addition:
-			result = problem.X + problem.Y
-		case multiplication:
-			result = problem.X * problem.Y
-		case subtraction:
-			result = problem.X - problem.Y
-		default:
+		err := c.ShouldBind(&problem)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "check fields and try again"})
+			return
+		}
+		solution := solveProblem(problem)
+		if solution == nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid arithmetic operation"})
 			return
 		}
-		solution := MathResponse{
-			SlackUsername: "Nade",
-			OperationType: problem.OperationType,
-			Result:        result,
-		}
 		c.JSON(200, solution)
 		return
+	}
+}
+
+func solveProblem(problem MathRequest) *MathResponse {
+	var result int64
+	if strings.Contains(string(problem.OperationType), "add") ||
+		strings.Contains(string(problem.OperationType), "addition") ||
+		strings.Contains(string(problem.OperationType), "plus") {
+		result = problem.X + problem.Y
+		solution := &MathResponse{
+			SlackUsername: "Nade",
+			OperationType: addition,
+			Result:        result,
+		}
+		return solution
+
+	} else if strings.Contains(string(problem.OperationType), "sub") ||
+		strings.Contains(string(problem.OperationType), "subtract") ||
+		strings.Contains(string(problem.OperationType), "minus") ||
+		strings.Contains(string(problem.OperationType), "subtraction") {
+		result = problem.X - problem.Y
+		solution := &MathResponse{
+			SlackUsername: "Nade",
+			OperationType: subtraction,
+			Result:        result,
+		}
+		return solution
+
+	} else if strings.Contains(string(problem.OperationType), "multiply") ||
+		strings.Contains(string(problem.OperationType), "multiplied") ||
+		strings.Contains(string(problem.OperationType), "multiplication") ||
+		strings.Contains(string(problem.OperationType), "times") {
+		result = problem.X * problem.Y
+		solution := &MathResponse{
+			SlackUsername: "Nade",
+			OperationType: multiplication,
+			Result:        result,
+		}
+		return solution
+
+	} else {
+		solution := &MathResponse{}
+		return solution
 	}
 }
