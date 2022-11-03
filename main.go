@@ -74,7 +74,7 @@ func Calculate() gin.HandlerFunc {
 			OperationType: problem.OperationType,
 			Result:        result,
 		}
-		c.JSON(http.StatusOK, solution)
+		c.JSON(200, solution)
 		return
 	}
 }
