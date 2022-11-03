@@ -63,6 +63,9 @@ func calculate() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "check fields and try again"})
 			return
 		}
+		if problem.OperationType == "" {
+			c.JSON(http.StatusBadRequest, "The operation type field is required.")
+		}
 		solution := solveProblem(problem)
 		if solution == nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid arithmetic operation"})
