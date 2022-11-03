@@ -64,7 +64,7 @@ func calculate() gin.HandlerFunc {
 			return
 		}
 		if problem.OperationType == "" {
-			response := MathResponse{OperationType: "nil"}
+			response := MathResponse{OperationType: "NAN"}
 			c.JSON(http.StatusOK, response)
 			return
 		}
