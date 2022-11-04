@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -80,9 +82,27 @@ func calculate() gin.HandlerFunc {
 
 func solveProblem(problem MathRequest) *MathResponse {
 	var result int64
+	var x, y int
+	re := regexp.MustCompile("[0-9]+")
+	numbers := re.FindAllString(string(problem.OperationType), -1)
+	if len(numbers) != 0 {
+		x, _ = strconv.Atoi(numbers[0])
+		y, _ = strconv.Atoi(numbers[1])
+	}
 	if strings.Contains(string(problem.OperationType), "add") ||
 		strings.Contains(string(problem.OperationType), "addition") ||
-		strings.Contains(string(problem.OperationType), "plus") {
+		strings.Contains(string(problem.OperationType), "plus") ||
+		strings.Contains(string(problem.OperationType), "+") ||
+		strings.Contains(string(problem.OperationType), "sum") {
+		if x != 0 || y != 0 {
+			result = int64(x + y)
+			solution := &MathResponse{
+				SlackUsername: "Nade",
+				OperationType: addition,
+				Result:        result,
+			}
+			return solution
+		}
 		result = problem.X + problem.Y
 		solution := &MathResponse{
 			SlackUsername: "Nade",
@@ -94,7 +114,18 @@ func solveProblem(problem MathRequest) *MathResponse {
 	} else if strings.Contains(string(problem.OperationType), "sub") ||
 		strings.Contains(string(problem.OperationType), "subtract") ||
 		strings.Contains(string(problem.OperationType), "minus") ||
-		strings.Contains(string(problem.OperationType), "subtraction") {
+		strings.Contains(string(problem.OperationType), "subtraction") ||
+		strings.Contains(string(problem.OperationType), "-") ||
+		strings.Contains(string(problem.OperationType), "difference") {
+		if x != 0 || y != 0 {
+			result = int64(x - y)
+			solution := &MathResponse{
+				SlackUsername: "Nade",
+				OperationType: subtraction,
+				Result:        result,
+			}
+			return solution
+		}
 		result = problem.X - problem.Y
 		solution := &MathResponse{
 			SlackUsername: "Nade",
@@ -106,7 +137,17 @@ func solveProblem(problem MathRequest) *MathResponse {
 	} else if strings.Contains(string(problem.OperationType), "multiply") ||
 		strings.Contains(string(problem.OperationType), "multiplied") ||
 		strings.Contains(string(problem.OperationType), "multiplication") ||
-		strings.Contains(string(problem.OperationType), "times") {
+		strings.Contains(string(problem.OperationType), "times") ||
+		strings.Contains(string(problem.OperationType), "*") {
+		if x != 0 || y != 0 {
+			result = int64(x * y)
+			solution := &MathResponse{
+				SlackUsername: "Nade",
+				OperationType: multiplication,
+				Result:        result,
+			}
+			return solution
+		}
 		result = problem.X * problem.Y
 		solution := &MathResponse{
 			SlackUsername: "Nade",
