@@ -138,7 +138,8 @@ func solveProblem(problem MathRequest) *MathResponse {
 		strings.Contains(string(problem.OperationType), "multiplied") ||
 		strings.Contains(string(problem.OperationType), "multiplication") ||
 		strings.Contains(string(problem.OperationType), "times") ||
-		strings.Contains(string(problem.OperationType), "*") {
+		strings.Contains(string(problem.OperationType), "*") ||
+		strings.Contains(string(problem.OperationType), "product") {
 		if x != 0 || y != 0 {
 			result = int64(x * y)
 			solution := &MathResponse{
