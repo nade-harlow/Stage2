@@ -75,6 +75,7 @@ func calculate() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid arithmetic operation"})
 			return
 		}
+		log.Println("RESULT: ", solution)
 		c.JSON(200, solution)
 		return
 	}
